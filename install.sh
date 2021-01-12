@@ -43,7 +43,9 @@ fi
 TOTAL_PHYSICAL_MEM=$(awk '/^MemTotal:/ {print $2}' /proc/meminfo)
 TOTAL_SWAP=$(awk '/^SwapTotal:/ {print $2}' /proc/meminfo)
 if [ "$TOTAL_PHYSICAL_MEM" -lt 524288 ]; then
-	echo "This machine has: $(printf "%'d" $((TOTAL_PHYSICAL_MEM / 1024))) MiB ($(printf "%'d" $((((TOTAL_PHYSICAL_MEM * 1024) / 1000) / 1000))) MB) memory (RAM)."
+  PRINT_MiB=$(printf "%'d" $((TOTAL_PHYSICAL_MEM / 1024)))
+  PRINT_MB=$(printf "%'d" $((((TOTAL_PHYSICAL_MEM * 1024) / 1000) / 1000)))
+	echo "This machine has: $PRINT_MiB MiB ($PRINT_MB MB) memory (RAM)."
 	echo -e "\n${red}Error: ISPConfig needs more memory to function properly. Please run this script on a machine with at least 512 MiB memory, 1 GiB (1024 MiB) recommended.${NC}" >&2
 	exit 1
 fi
@@ -160,7 +162,7 @@ source $APWD/distros/$DISTRO/install_basephp.sh #to remove in feature release
 #---------------------------------------------------------------------
 clear
 
-echo "Welcome to ISPConfig Setup Script v.3.0.3.1"
+echo "Welcome to ISPConfig Setup Script v.3.0.7"
 echo "This software is developed by Temporini Matteo"
 echo "with the support of the community."
 echo "You can visit my website at the followings URLs"
@@ -188,9 +190,11 @@ fi
 CPU_CORES=$(nproc --all)
 echo -e "CPU Cores:\t\t\t\t$CPU_CORES"
 ARCHITECTURE=$(getconf LONG_BIT)
+SWAP_MiB=$(printf "%'d" $((TOTAL_SWAP / 1024)))
+SWAP_MB=$(printf "%'d" $((((TOTAL_SWAP * 1024) / 1000) / 1000)))
 echo -e "Architecture:\t\t\t\t$HOSTTYPE ($ARCHITECTURE-bit)"
-echo -e "Total memory (RAM):\t\t\t$(printf "%'d" $((TOTAL_PHYSICAL_MEM / 1024))) MiB ($(printf "%'d" $((((TOTAL_PHYSICAL_MEM * 1024) / 1000) / 1000))) MB)"
-echo -e "Total swap space:\t\t\t$(printf "%'d" $((TOTAL_SWAP / 1024))) MiB ($(printf "%'d" $((((TOTAL_SWAP * 1024) / 1000) / 1000))) MB)"
+echo -e "Total memory (RAM):\t\t\t$PRINT_MiB MiB ($PRINT_MB MB)"
+echo -e "Total swap space:\t\t\t$SWAP_MiB MiB ($SWAP_MB MB)"
 if command -v lspci >/dev/null; then
 	GPU=( $(lspci 2>/dev/null | grep -i 'vga\|3d\|2d' | sed -n 's/^.*: //p') )
 fi
@@ -280,6 +284,10 @@ if [ -f /etc/debian_version ]; then
 		fi
 		if [ "$CFG_HHVM" == "yes" ]; then
 			InstallHHVM
+		fi
+		if [ "$CFG_JABBER" == "yes" ]; then
+			source $APWD/distros/$DISTRO/install_jabber.sh
+			InstallJabber
 		fi
 		if [ "$CFG_METRONOME" == "yes" ]; then
 			source $APWD/distros/$DISTRO/install_metronome.sh

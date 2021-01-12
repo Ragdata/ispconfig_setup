@@ -11,6 +11,20 @@ We'll use only to inform you on new version of the script :)
 
 
 # Version #
+<b>v.3.0.7</b>
+
+Added Ubuntu 20.04 support
+
+Removed Metronome XMPP Server in favour of eJabberd XMPP Server
+
+Added Movim XMPP Client
+
+* [eJabberd XMPP Server (XMPP + MQTT + SIP)](https://www.ejabberd.im/)
+
+* [Movim XMPP Client](https://movim.eu/)
+
+* [Movim@GitHub](https://github.com/movim/movim/)
+
 <b>v.3.0.6</b>
 
 Debian 10 fix for Debian 10
